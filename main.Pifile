@@ -4,8 +4,7 @@ PUMP 800M
 
 source source.Pifile
 
-# Enable SSH service
-RUN bash -c "systemctl enable ssh"
+source ssh.Pifile
 
 # Add the user and make it sudoer only if it doesn't exist
 RUN bash -c "id -u ${USER} &>/dev/null || useradd -m -s /bin/bash ${USER}"
@@ -23,7 +22,7 @@ RUN bash -c "echo ${HOSTNAME} > /etc/hostname"
 RUN bash -c "sed -i 's/127.0.1.1.*/127.0.1.1\t${HOSTNAME}/g' /etc/hosts"
 
 # Disables interactive login especially on raspberry pi 5
-RUN bash -c "systemctl disable userconfig"
+RUN bash -c "systemctl disable userconfig 2>/dev/null || echo 'userconfig service not found, skipping'"
 RUN bash -c "systemctl enable getty@tty1"
 
 # Update locale
@@ -33,29 +32,29 @@ source locale.Pifile
 INSTALL "./motd" "/etc/motd"
 RUN bash -c "cp /etc/motd /home/${USER}/.bash_profile"
 
-# Update the system
-RUN apt-get update && apt-get upgrade -y
+# Ignore update as it takes too long on ubuntu
+# RUN apt-get update 
+
+# Ignore upgrade as it takes too long
+# RUN apt-get upgrade -y
 
 echo "----------------------------------------"
 echo "---------System updated-----------------"
 echo "----------------------------------------"
 
-# Install robonet for the user
-RUN bash -c "mkdir -p /home/${USER}/.cargo/bin"
-RUN bash -c "chown -R ${USER}:${USER} /home/${USER}/.cargo"
+# Ensure that network manager is installed
+RUN apt-get install network-manager -y
 
-ENV CARGO_HOME /home/${USER}/.cargo
-
+# Install robonet for the system as root
 RUN bash -c "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/neurobionics/robonet/releases/download/0.3.2/robonet-installer.sh | sh"
-RUN bash -c "echo 'export PATH=\"\$HOME/.cargo/bin:\$PATH\"' >> /home/${USER}/.bashrc"
-RUN bash -c "/home/${USER}/.cargo/bin/robonet --version"
+RUN bash -c "$HOME/.cargo/bin/robonet --version"
 
 # Add network definitions with robonet
-RUN bash -c "/home/${USER}/.cargo/bin/robonet add-network -m ap -n ${AP_SSID} -p ${AP_PASSWORD} -r 0 -i 10.0.0.200"
+RUN bash -c "$HOME/.cargo/bin/robonet add-network -m ap -n ${AP_SSID} -p ${AP_PASSWORD} -r 0 -i 10.0.0.200 || echo 'Failed to add AP network, continuing anyway'"
 
 # Only add home network if SSID and password are provided
 RUN bash -c "if [ ! -z \"${HOMENETWORK_SSID}\" ] && [ ! -z \"${HOMENETWORK_PASSWORD}\" ]; then \
-    /home/${USER}/.cargo/bin/robonet add-network -m wpa -n ${HOMENETWORK_SSID} -p ${HOMENETWORK_PASSWORD} -r 50; \
+    $HOME/.cargo/bin/robonet add-network -m wpa -n ${HOMENETWORK_SSID} -p ${HOMENETWORK_PASSWORD} -r 50; \
     echo 'Home network added'; \
   else \
     echo 'Skipping home network configuration - credentials not provided'; \
@@ -63,13 +62,13 @@ RUN bash -c "if [ ! -z \"${HOMENETWORK_SSID}\" ] && [ ! -z \"${HOMENETWORK_PASSW
 
 # Only add enterprise network if required credentials are provided
 RUN bash -c "if [ ! -z \"${ENTNETWORK_SSID}\" ] && [ ! -z \"${ENTNETWORK_IDENTITY}\" ] && [ ! -z \"${ENTNETWORK_PASSWORD}\" ]; then \
-    /home/${USER}/.cargo/bin/robonet add-network -m wpaeap -n ${ENTNETWORK_SSID} -d ${ENTNETWORK_IDENTITY} -p ${ENTNETWORK_PASSWORD} -r ${ENTNETWORK_PRIORITY}; \
+    $HOME/.cargo/bin/robonet add-network -m wpaeap -n ${ENTNETWORK_SSID} -d ${ENTNETWORK_IDENTITY} -p ${ENTNETWORK_PASSWORD} -r ${ENTNETWORK_PRIORITY}; \
     echo 'Enterprise network added'; \
   else \
     echo 'Skipping enterprise network configuration - credentials not provided'; \
   fi"
 
-RUN bash -c "/home/${USER}/.cargo/bin/robonet install --email ${EMAIL_ADDRESS} --smtp-server ${SMTP_SERVER} --smtp-user ${SMTP_USERNAME} --smtp-password ${SMTP_PASSWORD}"
+RUN bash -c "$HOME/.cargo/bin/robonet install --email ${EMAIL_ADDRESS} --smtp-server ${SMTP_SERVER} --smtp-user ${SMTP_USERNAME} --smtp-password ${SMTP_PASSWORD}"
 
 echo "----------------------------------------"
 echo "---------Robonet installed--------------"

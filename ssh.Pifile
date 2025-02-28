@@ -1,0 +1,4 @@
+# Enable SSH service
+
+RUN bash -c "sed -i 's/#    PasswordAuthentication yes/    PasswordAuthentication yes/' /etc/ssh/ssh_config"
+RUN bash -c "systemctl enable ssh"

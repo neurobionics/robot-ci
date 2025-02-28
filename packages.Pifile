@@ -1,6 +1,6 @@
 # Install the necessary packages
-RUN apt-get install -y python3-pip --upgrade
-RUN apt-get install -y python3-virtualenv
+# RUN apt-get install -y python3-pip
+# RUN apt-get install -y python3-virtualenv
 RUN apt-get install -y git
 RUN apt-get install -y gh
 
