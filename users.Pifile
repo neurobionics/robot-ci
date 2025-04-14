@@ -19,8 +19,8 @@ if [ -z "${ADMINPASSWORD}" ]; then
     exit 0
 fi
 
-if [ -z "${USERPASSWORD}" ]; then
-    echo "USERPASSWORD: ${USERPASSWORD}"
+if [ -z "${OTHERUSERSPASSWORD}" ]; then
+    echo "OTHERUSERSPASSWORD: ${OTHERUSERSPASSWORD}"
     echo "Warning: No user password found in configuration. No users will be created."
     exit 0
 fi
@@ -47,7 +47,7 @@ for i in "${!emails[@]}"; do
         echo "${username}:${ADMINPASSWORD}" | chpasswd
     else
         # Set regular user password
-        echo "${username}:${USERPASSWORD}" | chpasswd
+        echo "${username}:${OTHERUSERSPASSWORD}" | chpasswd
         # Add regular users to dialout group for serial port access
         usermod -aG dialout "${username}"
     fi
