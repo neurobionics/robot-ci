@@ -24,9 +24,9 @@ dtoverlay=uart1-pi5
 dtoverlay=uart2-pi5
 
 # I2C Configuration
-dtparam=i2c_arm=on
-dtoverlay=i2c2-pi5,pins_12_13
-dtoverlay=i2c3-pi5,pins_14_15
+dtparam=i2c_arm=on,i2c_arm_baudrate=400000
+dtoverlay=i2c2-pi5,pins_12_13,baudrate=400000
+dtoverlay=i2c3-pi5,pins_14_15,baudrate=400000
 
 # SPI Configuration
 dtparam=spi=on
