@@ -12,3 +12,6 @@ RUN apt-get install -y python3-spidev
 RUN apt-get install -y libopenblas-dev
 RUN apt-get install -y libatlas-base-dev
 
+# Missing wireless-tools package on ubuntu
+# iwgetid is then missing and the ticket from robonet does not contain the SSID
+RUN apt-get install -y wireless-tools
