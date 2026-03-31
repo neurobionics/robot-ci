@@ -12,6 +12,9 @@
 
 **Robot CI**: Effortless building, testing, and deploying customized robot operating systems at scale. This tool lets you **version control your entire robot OS configuration and makes remote development a breeze**.
 
+### 🧠 What It Does
+Robot CI builds a custom Raspberry Pi OS image. You download that image, flash it onto an SD card, and boot your RPi. On startup, the Pi automatically connects to WiFi and emails you its IP address. You can then connect to the Pi from your laptop and start developing immediately!
+
 ## 🎯 Key Features
 
 This tool solves common challenges in robotics development:
@@ -64,15 +67,22 @@ Choose the option that best suits your needs:
 <details>
 <summary>2. Configure Secrets</summary>
 
-The next step is to create the secrets that securely handle sensitive information. These secrets will be added to the image configuration when running the workflow. To add secrets, navigate to the Settings tab, and select **Secrets and variables**, and select Actions. Create each of the following secrets, making sure to use the same variable naming:
+The next step is to create the secrets that securely handle sensitive information. These secrets will be added to the image configuration when running the workflow. To add secrets, navigate to the Settings tab, select **Secrets and variables**, select **Actions**, and select click “**New repository secret**”, then enter the name and value.
+
+⚠️**IMPORTANT** : 
+  - Variable names must match exactly (e.g., EMAIL_ADDRESS, not email_address)
+  - Type values exactly as shown. Extra spaces (especially at the start or end) can break the build.
+  - Common mistake: EMAIL_ADDRESS = johndoe@gmail.com␣  ← Invisible trailing space
+
+Required secrets:
 
 | Secret | Purpose |
 |--------|---------|
 | `EMAIL_ADDRESS` | Email address(es) to send notifications to; separate multiple addresses with commas **("," and not ", ")** |
-| `ENTNETWORK_SSID` | Enterprise (e.g. university) wifi network name |
-| `ENTNETWORK_IDENTITY` | Network username |
+| `ENTNETWORK_SSID` | Enterprise (e.g. university) wifi network name. Use your normal WiFi name if not on enterprise|
+| `ENTNETWORK_IDENTITY` | Network username. For home WiFi, this is usually the same as your WiFi name (SSID).|
 | `ENTNETWORK_PASSWORD` | Network password |
-| `ENTNETWORK_PRIORITY` | Choose connection priority (e.g. a number greater than five will be higher priority; higher is greater priority) |
+| `ENTNETWORK_PRIORITY` | A number that sets connection priority (higher = preferred). Use 10 unless you have multiple networks. |
 | `WIFI_COUNTRY_CODE` | WiFi country code, defaults to US if not set |
 
 Optional secrets:
@@ -87,7 +97,10 @@ Optional secrets:
 | `SMTP_PASSWORD` | Password for the email account that will send notifications, default to our app password |
 
 #### Optional: Configuring SMTP
-If you prefer to use your own gmal account to send email notification with the IP address of your robot instead of using the default opensourceleg@gmail.com account, you can configure your own Gmail account to work with SMTP (Simple Mail Transfer Protocol). This is easiest with a personal Gmail account, because certain organization or university accounts may have restrictions on creating an app password (a requirement for SMTP configuration).
+
+Skip this unless you want to use your own email account.
+
+If you prefer to use your own gmail account to send email notification with the IP address of your robot instead of using the default opensourceleg@gmail.com account, you can configure your own Gmail account to work with SMTP (Simple Mail Transfer Protocol). This is easiest with a personal Gmail account, because certain organization or university accounts may have restrictions on creating an app password (a requirement for SMTP configuration).
 
 > *Note: For non-Gmail accounts, more guidelines on SMTP configuration can be found [here](https://support.google.com/a/answer/176600?hl=en).*
 
@@ -107,6 +120,8 @@ If you prefer to use your own gmal account to send email notification with the I
 
 <details>
 <summary>3. Build Your Image</summary>
+  
+In this step, you will generate a custom OS image for your Raspberry Pi.
 
 1. Navigate to the **Actions** tab, enable workflows by clicking on the green button, and then select **Build** from the left hand side
 2. Click the **Run Workflow** button and select your build options:
@@ -114,9 +129,10 @@ If you prefer to use your own gmal account to send email notification with the I
       > *Note: ubuntu is NOT compatible with Raspberry Pi 4*
    - Provide your `admin password` and `user password`. Users are created based on the `EMAIL_ADDRESS` secret, for example, if `EMAIL_ADDRESS` secret is set to "user1@example.com,user2@example.com", two users will be created: "user1" and "user2" and the first user will be considered the admin and all other users will be considered regular users.
    - Configure WiFi settings for additional home networks
-   - Be sure to record this information--you will need it (e.g. access point login info)
+   - **Be sure to record this information--you will need it (e.g. access point login info)**
    - ☕ Grab a cup of coffee. This process takes about ten minutes
-3. Once the build is complete, click on the **build**, and the OS image will be available as an artifact in the Actions tab. It will be a .zip file available for download. 
+3. When the workflow finishes, click the completed Build run in the Actions tab. Scroll down to Artifacts and download the .zip file.
+4. If the build fails, check your secrets for typos or missing values.
 </details>
 
 <details>
@@ -125,16 +141,16 @@ If you prefer to use your own gmal account to send email notification with the I
 1. Download and flash the image to an SD card using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
    - Select your RPi hardware version number in the Raspberry Pi Imager
    - Choose the Operating System, scroll to the last option, and select **Use custom**
-   - Browse to the custom image recently downloaded from your image build
+   - Choose the custom image you recently downloaded from your image build
    - Select the SD card as the storage medium
-   - Select No to 'Apply OS customization options?' 
-3. Boot your RPi. Please use a 15-25+ W power supply (e.g not a low-power PC USB port) to ensure proper RPi functionality
+   - When prompted “Apply OS customization options?”, select **No** (Robot CI already configures everything).
+2. Boot your RPi. Use a proper power supply (15–25W). Do not power the Pi from a laptop USB port. 
 
 > [!NOTE]
-> **First Boot**: After powering on your Raspberry Pi for the first time, wait 5 minutes and then power off and on again. This first boot will not send an email. Please power cycle after five minutes for the email and network services to be available. This is only required for the first boot.
-
-3. Connect via:
-   - Enterprise or Home network: Check your email for the IP address
+> **First Boot**: On first boot, the Pi configures itself (this takes ~5 minutes). Do not unplug the Pi during this process. Then reboot once to activate networking and email notifications. 
+3. Connect via: 
+   - Enterprise or Home network: Check your email, you should have received an IP address from the RPI.
+   If you haven't received an email:
    - Fallback Access-Point (AP) mode: Connect to RPi's network (IP: 10.0.0.200)
 
 If you encounter any issues, please follow the debugging steps below. 
@@ -150,9 +166,14 @@ If you encounter any issues, please follow the debugging steps below.
    - Press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Mac) or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Windows) to open Command Palette.
    - Type and select <kbd>Remote-SSH: Connect to Host...</kbd>
    - Enter the SSH connection string: <kbd>ssh &lt;user&gt;@&lt;IP Address&gt;</kbd>, where <kbd>IP</kbd> is the IP address of the raspberry pi you get via email notification or the local internet. <kbd>user</kbd> is the name previously configured when adding your email address to send notifications to: <kbd>[user]@[domain].com</kbd>
-   - Enter the default Password when prompted.
-   - After connecting, VS Code will prompt you to open a folder from your Pi. You can now edit files, run terminals, and develop just like local, but on your Raspberry Pi! 
-</details>
+   - Use the password you set during the build step when prompted. If you are logging in as the first user (first email), use the admin password.
+   - After connecting, VS Code will prompt you to open a folder from your Pi. You can now edit files, run terminals, and develop just like local, but on your Raspberry Pi!
+4. If connection fails, double-check:
+   - your username (from email)
+   - your IP address
+   - that your Pi is powered on
+  </details>
+
 
 ## 🐞 Debugging
 
