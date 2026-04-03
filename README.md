@@ -13,7 +13,7 @@
 **Robot CI**: Effortless building, testing, and deploying customized robot operating systems at scale. This tool lets you **version control your entire robot OS configuration and makes remote development a breeze**.
 
 ### 🧠 What It Does
-Robot CI builds a custom Raspberry Pi OS image. You download that image, flash it onto an SD card, and boot your RPi. On startup, the Pi automatically connects to WiFi and emails you its IP address. You can then connect to the Pi from your laptop and start developing immediately!
+Robot CI builds a custom Raspberry Pi OS image. You download that image, flash it onto an SD card, and boot your RPi. On startup, the RPi automatically connects to WiFi and emails you its IP address. You can then connect to the RPi from your laptop and start developing immediately!
 
 ## 🎯 Key Features
 
@@ -79,9 +79,9 @@ Required secrets:
 | Secret | Purpose |
 |--------|---------|
 | `EMAIL_ADDRESS` | Email address(es) to send notifications to; separate multiple addresses with commas **("," and not ", ")** |
-| `ENTNETWORK_SSID` | Enterprise (e.g. university) wifi network name. Use your normal WiFi name if not on enterprise|
-| `ENTNETWORK_IDENTITY` | Network username. For home WiFi, this is usually the same as your WiFi name (SSID).|
-| `ENTNETWORK_PASSWORD` | Network password |
+| `ENTNETWORK_SSID` | Enterprise (e.g. university) wifi network name.|
+| `ENTNETWORK_IDENTITY` | Network username to log into your enterprise account.|
+| `ENTNETWORK_PASSWORD` | Network password for your enterprise account.|
 | `ENTNETWORK_PRIORITY` | A number that sets connection priority (higher = preferred). Use 10 unless you have multiple networks. |
 | `WIFI_COUNTRY_CODE` | WiFi country code, defaults to US if not set |
 
@@ -98,7 +98,7 @@ Optional secrets:
 
 #### Optional: Configuring SMTP
 
-Skip this unless you want to use your own email account.
+Skip this step unless you want to send the email containing the IP address (that you receive upon boot) from your personal email address. 
 
 If you prefer to use your own gmail account to send email notification with the IP address of your robot instead of using the default opensourceleg@gmail.com account, you can configure your own Gmail account to work with SMTP (Simple Mail Transfer Protocol). This is easiest with a personal Gmail account, because certain organization or university accounts may have restrictions on creating an app password (a requirement for SMTP configuration).
 
@@ -144,10 +144,11 @@ In this step, you will generate a custom OS image for your Raspberry Pi.
    - Choose the custom image you recently downloaded from your image build
    - Select the SD card as the storage medium
    - When prompted “Apply OS customization options?”, select **No** (Robot CI already configures everything).
-2. Boot your RPi. Use a proper power supply (15–25W). Do not power the Pi from a laptop USB port. 
+2. Boot your RPi. Use a proper power supply (15–25W). Do not power the RPi from a laptop USB port. 
 
-> [!NOTE]
-> **First Boot**: On first boot, the Pi configures itself (this takes ~5 minutes). Do not unplug the Pi during this process. Then reboot once to activate networking and email notifications. 
+> ⚠️
+> **First Boot**: On first boot, the RPi configures itself (this takes ~5 minutes). Do not unplug the RPi during this process. Then reboot once to activate networking and email notifications.
+This only happens the first boot after flashing.
 3. Connect via: 
    - Enterprise or Home network: Check your email, you should have received an IP address from the RPI.
    If you haven't received an email:
@@ -165,13 +166,13 @@ If you encounter any issues, please follow the debugging steps below.
 3. Connect to Raspberry Pi via SSH in VS Code
    - Press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Mac) or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Windows) to open Command Palette.
    - Type and select <kbd>Remote-SSH: Connect to Host...</kbd>
-   - Enter the SSH connection string: <kbd>ssh &lt;user&gt;@&lt;IP Address&gt;</kbd>, where <kbd>IP</kbd> is the IP address of the raspberry pi you get via email notification or the local internet. <kbd>user</kbd> is the name previously configured when adding your email address to send notifications to: <kbd>[user]@[domain].com</kbd>
+   - Enter the SSH connection string: <kbd>ssh &lt;user&gt;@&lt;IP Address&gt;</kbd>, where <kbd>IP</kbd> is the IP address of the Raspberry Pi you get via email notification or the local internet. <kbd>user</kbd> is the name previously configured when adding your email address to send notifications to: <kbd>[user]@[domain].com</kbd>
    - Use the password you set during the build step when prompted. If you are logging in as the first user (first email), use the admin password.
-   - After connecting, VS Code will prompt you to open a folder from your Pi. You can now edit files, run terminals, and develop just like local, but on your Raspberry Pi!
+   - After connecting, VS Code will prompt you to open a folder from your RPi. You can now edit files, run terminals, just like developing on your own computer , but on your Raspberry Pi!
 4. If connection fails, double-check:
    - your username (from email)
    - your IP address
-   - that your Pi is powered on
+   - that your RPi is powered on
   </details>
 
 
