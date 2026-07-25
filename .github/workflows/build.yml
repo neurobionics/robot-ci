@@ -45,10 +45,10 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Write env variables
@@ -72,7 +72,7 @@ jobs:
         run: |
           tar -czvf main.tar.gz main.img
       - name: Upload artifacts  
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ github.workflow }}-${{ github.sha }}.zip
           path: main.img
