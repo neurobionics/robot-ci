@@ -1,0 +1,30 @@
+{
+    "test": "context-switch",
+    "start_time": "2025-10-21T05:14:19Z",
+    "end_time": "2025-10-21T05:14:24Z",
+    "duration_s": 5,
+    "workers": 1,
+    "sample_interval_s": 1,
+    "artifacts": {
+        "time_series_csv": "./switch_ctx_20251021_011419.csv",
+        "stressng_log": "./switch_ctx_stressng_20251021_011419.log"
+    },
+    "system": {
+        "uname": "Linux Mickey 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux" 
+    },
+    "stats": {
+        "samples": 5,
+        "avg_ctxt_per_s": 54039.80,
+        "max_ctxt_per_s": 56785.00,
+        "max_procs_running": 7,
+        "max_procs_blocked": 0
+    },
+    "stress_ng": {
+        "stressor": "switch",
+        "bogo_ops": 102130,
+        "bogo_ops_per_s": 4.19,
+        "real_time_s": 102130,
+        "user_time_s": 5.00,
+        "sys_time_s": 0.09
+    }
+}

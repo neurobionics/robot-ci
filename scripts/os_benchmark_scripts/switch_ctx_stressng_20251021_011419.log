@@ -1,0 +1,13 @@
+stress-ng: info:  [6357] setting to a 5 second run per stressor
+stress-ng: info:  [6357] dispatching hogs: 1 switch
+stress-ng: info:  [6359] stress-ng-switch: (pipe) 48948.73 nanoseconds per context switch (based on parent run time)
+stress-ng: info:  [6357] successful run completed in 5.00s
+stress-ng: info:  [6357] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: info:  [6357]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: info:  [6357] switch           102130      5.00      0.09      4.19     20422.58       23862.15
+stress-ng: info:  [6357] for a 5.00s run time:
+stress-ng: info:  [6357]      80.04s available CPU time
+stress-ng: info:  [6357]       0.10s user time   (  0.12%)
+stress-ng: info:  [6357]       4.20s system time (  5.25%)
+stress-ng: info:  [6357]       4.30s total time  (  5.37%)
+stress-ng: info:  [6357] load average: 0.13 0.38 0.55
